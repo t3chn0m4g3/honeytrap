@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = foreign no-dependencies
 
-AM_CFLAGS=-Wall -Werror -Wno-stringop-truncation
+AM_CFLAGS=-Wall -Werror
 
 AM_CPPFLAGS= -I../
 
