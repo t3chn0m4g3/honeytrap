@@ -41,6 +41,8 @@ Attack *new_virtattack(struct in_addr r_addr, struct in_addr l_addr, uint16_t r_
 	if ((a = new_attack(r_addr, l_addr, r_port, l_port, proto)) == NULL) return NULL;
 
 	a->virtual = 1;
+	time(&(a->start_time));
+	a->end_time = a->start_time;
 
 	return(a);
 }
