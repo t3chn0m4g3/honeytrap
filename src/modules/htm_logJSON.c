@@ -209,7 +209,9 @@ int convert_attack_to_json(struct s_attack *sa, json_object *ja) {
 
 int logjson(Attack *attack) {
 	json_object *j_log;
-	
+
+	if (attack->virtual) return 0; // do not log virtual attacks
+
 	j_log = json_object_new_object();
 	if (convert_attack_to_json(attack, j_log) < 0) {
 		logmsg(LOG_ERR, 1, "logJSON: error while converting attack information to JSON.\n");
