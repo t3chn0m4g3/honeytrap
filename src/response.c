@@ -146,6 +146,7 @@ int load_default_responses(char *dir) {
 
 int send_default_response(int connection_fd, uint16_t port, uint16_t proto, u_char timeout) {
 	def_resp *cur_response = NULL;
+	ssize_t bytes_written;
 
 	if ((proto != TCP) && (proto != UDP)) {
 		fprintf(stderr, "  Error - Protocol %u is not supported.\n", proto);
@@ -164,11 +165,12 @@ int send_default_response(int connection_fd, uint16_t port, uint16_t proto, u_ch
 		logmsg(LOG_NOISY, 1, "   %s  No data for %u second(s), sending default response.\n",
 			portstr, (u_char) timeout);
 
-		if (!(write(connection_fd, cur_response->response, cur_response->size))) return(-1);
+		bytes_written = write(connection_fd, cur_response->response, cur_response->size);
+		if (bytes_written < 0 || (size_t) bytes_written != cur_response->size) return(-1);
 	} else {
 		logmsg(LOG_NOISY, 1, "   %s  No data for %d second(s), sending '\\n'.\n", portstr, timeout);
-		if (!(write(connection_fd, "\n", 1))) return(-1);
+		bytes_written = write(connection_fd, "\n", 1);
+		if (bytes_written != 1) return(-1);
 	}
 	return(0);
 }
-
