@@ -494,11 +494,12 @@ void start_dynamic_server(struct in_addr ip_r, uint16_t port_r, struct in_addr i
 int handle_connection_normal(int connection_fd, uint16_t port, uint16_t proto, u_char timeout, Attack * attack) {
 	fd_set		rfds;
 	struct timeval	r_timeout;
-	int		disconnect, bytes_read, total_bytes;
+	int		disconnect, bytes_read, total_bytes, response_sent;
 
 //#define total_bytes	attack->a_conn.payload.size
 	total_bytes	= 0;
 	disconnect	= 0;
+	response_sent	= 0;
 
 	/* read data from sockets */
 	for (;;) {
@@ -527,7 +528,7 @@ int handle_connection_normal(int connection_fd, uint16_t port, uint16_t proto, u
 				close(connection_fd);
 				return(process_data
 					(attack_string, total_bytes, NULL, 0, attack->a_conn.l_port, attack));
-			} else {
+			} else if (!response_sent) {
 				if ((send_default_response(connection_fd, port, proto, read_timeout)) == -1) {
 					logmsg(LOG_ERR, 1,
 					       "   %s  Error - Sending response failed: %m.\n", portstr);
@@ -535,6 +536,7 @@ int handle_connection_normal(int connection_fd, uint16_t port, uint16_t proto, u
 					return(process_data
 						(attack_string, total_bytes, NULL, 0, attack->a_conn.l_port, attack));
 				}
+				response_sent = 1;
 			}
 			break;
 		default:
